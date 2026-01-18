@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	sandbox "github.com/sergei-svistunov/libsandbox"
+	sandbox "github.com/Highload-fun/libsandbox"
 )
 
 func TestSandbox(t *testing.T) {
