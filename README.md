@@ -57,6 +57,8 @@ if err := cmd.Run(); err != nil {
 }
 ```
 
+`PassListener("127.0.0.1:3128", "/run/app/listener.sock")` makes the sandbox listen on the address in its network namespace and pass the listener to the unix socket (not with `SetNoNewNet(true)`).
+
 ---
 
 ## Package philosophy

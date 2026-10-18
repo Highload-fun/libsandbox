@@ -55,3 +55,29 @@ func TestSandbox(t *testing.T) {
 		t.Fatalf("command output: %s", string(out))
 	}
 }
+
+func TestBuildExecArgsPassListener(t *testing.T) {
+	args := sandbox.New("/tmp/jail").PassListener("127.0.0.1:3128", "/run/x/.listener.sock").BuildExecArgs("/bin/qservice", []string{"a"})
+	want := []string{"--pass_listener", "127.0.0.1:3128=/run/x/.listener.sock"}
+	sep := -1
+	for i, a := range args {
+		if a == "--" {
+			sep = i
+			break
+		}
+	}
+	for i := 0; i+1 < sep; i++ {
+		if args[i] == want[0] && args[i+1] == want[1] {
+			return
+		}
+	}
+	t.Fatalf("%q has no %q before --", args, want)
+}
+
+func TestBuildExecArgsWithoutPassListener(t *testing.T) {
+	for _, a := range sandbox.New("/tmp/jail").BuildExecArgs("/bin/qservice", nil) {
+		if a == "--pass_listener" {
+			t.Fatal("unexpected --pass_listener")
+		}
+	}
+}

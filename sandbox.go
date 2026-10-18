@@ -33,6 +33,7 @@ type Sandbox struct {
 	memLimit      uint64
 	saveUsageStat string
 	execDir       string
+	listener      string
 }
 
 type file struct {
@@ -121,6 +122,13 @@ func (s *Sandbox) ExecDir(dir string) *Sandbox {
 	return s
 }
 
+// PassListener makes the sandbox listen on addr in its network namespace and pass the listener to the unix socket at socketPath.
+func (s *Sandbox) PassListener(addr, socketPath string) *Sandbox {
+	s.listener = addr + "=" + socketPath
+
+	return s
+}
+
 // Command constructs an exec.Cmd that runs a command inside the configured sandbox.
 func (s *Sandbox) Command(path string, args ...string) *exec.Cmd {
 	return s.CommandContext(nil, path, args...)
@@ -161,6 +169,10 @@ func (s *Sandbox) BuildExecArgs(path string, args []string) []string {
 
 	if s.noNewNet {
 		execArgs = append(execArgs, "--no_new_net")
+	}
+
+	if s.listener != "" {
+		execArgs = append(execArgs, "--pass_listener", s.listener)
 	}
 
 	if s.cgroup != "" {
